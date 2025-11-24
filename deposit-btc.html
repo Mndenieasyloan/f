@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Deposit - V0 Trade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: rgb(107 114 128); border-radius: 0.5rem; transition: all 0.2s; }
+        .sidebar-link:hover { background-color: rgb(249 250 251); color: rgb(249 115 22); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <header class="sticky top-0 z-50 border-b border-purple-500/20 bg-slate-950/80 backdrop-blur-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-4">
+                <a href="index.html" class="flex items-center gap-2">
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">V0 Trade</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-white border-r border-gray-200 p-4">
+            <a href="deposit.html" class="sidebar-link">💰 Deposit</a>
+            <a href="dashboard.html" class="sidebar-link">📊 Dashboard</a>
+        </aside>
+
+        <main class="flex-1 p-8">
+            <div class="max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Bitcoin Deposit</h1>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                    <div class="mb-6">
+                        <p class="text-lg font-semibold text-gray-900 mb-2">Send Bitcoin to this address:</p>
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                            <p class="font-mono text-sm break-all" id="btcAddress">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
+                        </div>
+                        <button onclick="copyAddress()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition">
+                            Copy Address
+                        </button>
+                    </div>
+
+                    <div class="mb-6">
+                        <img src="/placeholder.svg?height=200&width=200" alt="BTC QR" class="mx-auto">
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-left mb-6">
+                        <p class="text-sm text-yellow-800"><strong>Important:</strong> Send only Bitcoin (BTC) to this address. Minimum deposit: $10. Your deposit will be credited after 3 confirmations.</p>
+                    </div>
+
+                    <a href="dashboard.html" class="inline-block bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold transition">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function copyAddress() {
+            const address = document.getElementById('btcAddress').textContent;
+            navigator.clipboard.writeText(address);
+            alert('Address copied to clipboard!');
+        }
+    </script>
+</body>
+</html>
