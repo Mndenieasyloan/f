@@ -138,13 +138,23 @@
     </main>
 
 <script>
-/* --- BASEROW CONFIG (FINAL WORKING) --- */
-const BASEROW_API_URL = "https://api.baserow.io/api/database/rows/table/755975/";
+/* --- BASEROW CONFIG --- */
+const USERS_API = "https://api.baserow.io/api/database/rows/table/755975/";
+const WALLETS_API = "https://api.baserow.io/api/database/rows/table/756077/";
 const BASEROW_TOKEN = "LG6hnTBxgBG78FueElsSwpHRd4Wep1oL";
 
+/* User fields */
 const FIELD_FULLNAME = "field_6393282";
 const FIELD_EMAIL = "field_6393283";
 const FIELD_PASSWORD = "field_6393285";
+
+/* Wallet fields */
+const WALLET_EMAIL = "field_6394418";
+const WALLET_DEPOSIT = "field_6394419";
+const WALLET_RETURNED = "field_6394420";
+const WALLET_COMMISSIONS = "field_6394421";
+const WALLET_EARNINGS = "field_6394422";
+const WALLET_EARNING_BALANCE = "field_6394423";
 
 /* --- HASH PASSWORD (SHA-256) --- */
 async function hashPassword(password) {
@@ -179,35 +189,58 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
 
     const hashed = await hashPassword(pass);
 
-    const payload = {
+    /* --- Create User in USERS Table --- */
+    const userPayload = {
         [FIELD_FULLNAME]: fullname,
         [FIELD_EMAIL]: email,
         [FIELD_PASSWORD]: hashed
     };
 
-    const res = await fetch(BASEROW_API_URL, {
+    const res = await fetch(USERS_API, {
         method: "POST",
         headers: {
             "Authorization": "Token " + BASEROW_TOKEN,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(userPayload)
     });
 
-    const data = await res.json();
+    const userData = await res.json();
 
-    if (res.ok) {
-        showMessage("Account created successfully!");
-        setTimeout(() => window.location.href = "dashboard.html", 1200);
-    } else {
-        showMessage(data.error || "Signup failed", true);
+    if (!res.ok) {
+        showMessage(userData.error || "Signup failed", true);
+        return;
     }
+
+    /* --- AUTO CREATE WALLET ENTRY --- */
+    const walletPayload = {
+        [WALLET_EMAIL]: email,
+        [WALLET_DEPOSIT]: "0.00",
+        [WALLET_RETURNED]: "0.00",
+        [WALLET_COMMISSIONS]: "0.00",
+        [WALLET_EARNINGS]: "0.00",
+        [WALLET_EARNING_BALANCE]: "0.00"
+    };
+
+    await fetch(WALLETS_API, {
+        method: "POST",
+        headers: {
+            "Authorization": "Token " + BASEROW_TOKEN,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(walletPayload)
+    });
+
+    /* --- SUCCESS --- */
+    showMessage("Account created successfully!");
+    setTimeout(() => window.location.href = "dashboard.html", 1200);
 });
 
 function toggleMobileMenu() {
     document.getElementById("mobileMenu").classList.toggle("active");
 }
 </script>
+
 
 </body>
 </html>
