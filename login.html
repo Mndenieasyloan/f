@@ -63,13 +63,74 @@
         </div>
     </main>
 
-    <script>
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            alert('Login successful! Welcome back, ' + email);
-            window.location.href = 'dashboard.html';
+<script>
+    const BASEROW_TABLE_ID = 755975;
+
+    const BASEROW_API_URL =
+        `https://api.baserow.io/api/database/rows/table/${BASEROW_TABLE_ID}/?user_field_names=false`;
+
+    const BASEROW_TOKEN = "LG6hnTBxgBG78FueElsSwpHRd4Wep1oL";
+
+    // Correct field IDs
+    const FIELD_NAME = "field_6393282";
+    const FIELD_EMAIL = "field_6393283";
+    const FIELD_PASSWORD = "field_6393285";
+
+    // SHA-256 hashing for login (matches your stored format)
+    async function hashPassword(password) {
+        const msgUint8 = new TextEncoder().encode(password);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function showError(msg) {
+        alert(msg);
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (!email || !password) {
+            showError("Please fill in all fields.");
+            return;
         }
-    </script>
+
+        // Fetch all rows
+        let response = await fetch(BASEROW_API_URL, {
+            headers: {
+                "Authorization": `Token ${BASEROW_TOKEN}`
+            }
+        });
+
+        const data = await response.json();
+        console.log("Fetched users:", data);
+
+        // Find user by email
+        const user = data.results.find(u => u[FIELD_EMAIL] === email);
+
+        if (!user) {
+            showError("Email not found. Please register first.");
+            return;
+        }
+
+        // Hash input password and compare
+        const hashedInputPassword = await hashPassword(password);
+
+        if (hashedInputPassword !== user[FIELD_PASSWORD]) {
+            showError("Incorrect password. Please try again.");
+            return;
+        }
+
+        // Login success
+        localStorage.setItem("v0trade_user_email", email);
+        alert("Login successful!");
+        window.location.href = "dashboard.html";
+    }
+</script>
+
 </body>
 </html>
